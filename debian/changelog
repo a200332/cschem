@@ -1,3 +1,9 @@
+cschem (0.0.2-1) yakkety; urgency=medium
+
+  Trying to build a deb package
+
+ -- Daniel A. Wagenaar <daw@caltech.edu>  Sat, 29 Sep 2018 19:50:49 -0700
+
 cschem (0.0.1) yakkety; urgency=medium
 
   Prerelease
