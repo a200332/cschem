@@ -1,0 +1,7 @@
+?package(cschem):\
+	needs="X11" \
+	section="Applications/Education" \
+	title="ELN" \
+	command="cschem" \
+	icon="/usr/share/pixmaps/cschem.xpm"
+		  
