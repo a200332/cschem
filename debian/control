@@ -8,6 +8,6 @@ Homepage: http://www.danielwagenaar.net/cschem
 
 Package: cschem
 Architecture: any
-Depends: ${shlibs:Depends},${misc:Depends}, libqt5gui5 (>=5.5), libqt5webkit5 (>= 5.5), libqt5svg5 (>= 5.5)
-Description: Electronic Lab Notebook
- ELN is an electronic lab notebook with an emphasis on solid data storage.
+Depends: ${shlibs:Depends},${misc:Depends}, libqt5gui5 (>=5.5), libqt5svg5 (>= 5.5)
+Description: Electronic circuit and PCB layout editor
+ CSchem is an editor for electronic circuit designs
