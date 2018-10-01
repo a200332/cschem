@@ -4,6 +4,7 @@
 #include "Group.h"
 #include "Intersection.h"
 #include "Object.h"
+#include "PCBNet.h"
 
 class RepairData {
 public:
@@ -17,6 +18,50 @@ TraceRepair::TraceRepair(Group &grp): d(new RepairData(grp)) {
 
 TraceRepair::~TraceRepair() {
   delete d;
+}
+
+bool TraceRepair::fixAllPinTouchings() {
+  bool got = false;
+  while (true) {
+    bool any = false;
+    for (int id: d->grp.keys()) {
+      Object const &obj(d->grp.object(id));
+      if (obj.isTrace()) {
+        if (fixPinTouchings(id)) {
+          any = true;
+          break;
+        }
+      }
+    }
+    if (any) {
+      got = true;
+    } else {
+      break;
+    }
+  }
+  return got;
+}
+
+bool TraceRepair::fixAllTraceIntersections(Dim grid) {
+  bool got = false;
+  while (true) {
+    bool any = false;
+    for (int id: d->grp.keys()) {
+      Object const &obj(d->grp.object(id));
+      if (obj.isTrace()) {
+        if (fixTraceIntersections(id, grid)) {
+          any = true;
+          break;
+        }
+      }
+    }
+    if (any) {
+      got = true;
+    } else {
+      break;
+    }
+  }
+  return got;
 }
 
 bool TraceRepair::fixTraceIntersections(int trid, Dim grid) {
@@ -113,6 +158,7 @@ bool TraceRepair::dropDanglingTraces() {
   } 
   bool anyever = false;
   while (true) {
+    bool anynow = false;
     QSet<int> dropme;
     for (int id: d->grp.keys()) {
       Object const &obj(d->grp.object(id));
@@ -129,10 +175,29 @@ bool TraceRepair::dropDanglingTraces() {
 	}
       }
     }
-    if (dropme.isEmpty())
-      break;
-    for (int id: dropme)
+    for (int id: dropme) {
+      NodeID seed; seed<<id;
+      PCBNet net(d->grp, seed);
+      Object obj(d->grp.object(id));
       d->grp.remove(id);
+      QList<NodeID> nodes(net.nodes().toList());
+      if (nodes.size()>=2) {
+        NodeID alt = nodes.takeFirst();
+        if (alt==seed)
+          alt = nodes.takeFirst();
+        PCBNet altnet(d->grp, alt);
+        if (altnet.nodes().size() != net.nodes().size() - 1) {
+          // shouldn't have removed this node, so put it back
+          d->grp.insert(obj);
+        } else {
+          anynow = true;
+        }
+      } else {
+        anynow = true;
+      }
+    }
+    if (!anynow)
+      break;
     anyever = true;
   }
   return anyever;
